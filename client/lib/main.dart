@@ -20,7 +20,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MyHomePage(),
+        '/lista': (context) => ListaScreen(),
+      },
     );
   }
 }
@@ -100,6 +104,44 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         backgroundColor: const Color.fromARGB(255, 23, 151, 173),
+      ),
+
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            Container(
+              height: 80,
+              child: DrawerHeader(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'OpenSans',
+                      fontSize: 20,
+                      ),
+                    ),
+                ),
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(214, 23, 150, 173),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Simulador'),
+              onTap: () {
+                Navigator.pushNamed(context, '/');
+              },
+            ),
+            ListTile(
+              title: Text('Lista Médica'),
+              onTap: () {
+                Navigator.pushNamed(context, '/lista');
+              },
+            )
+          ],
+        ),
       ),
       
       body: Center(
@@ -221,3 +263,127 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class ListaScreen extends StatefulWidget {
+  @override
+  State<ListaScreen> createState() => _ListaScreenState();
+}
+
+class _ListaScreenState extends State<ListaScreen> {
+  Map<String, dynamic> dados = {};
+
+  Future<void> fetchDados() async {
+    final response = await http.get(Uri.parse('http://200.19.1.19/20212GR.ADS0004/TrabalhoFinalPDM/public/main.php'));
+    //final response = await http.get(Uri.parse('http://192.168.0.10:8080/public'));
+
+    if (response.statusCode == 200) {
+      print('Conexão bem-sucedida');
+      setState(() {
+        dados = json.decode(response.body);
+      });
+    } else {
+        throw Exception('Falha na conexão: ${response.statusCode}');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDados(); 
+  }
+
+  @override
+  Widget build(BuildContext context){
+
+    List especialidades = dados["especialidade"] ?? [];
+    List planosSaude = dados["planoSaude"] ?? [];
+
+    Map<int, String> planoSaudeMap = {
+      for (var plano in planosSaude)
+        plano['id_plano_saude']: plano['nm_plano']
+    };
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Lista Médica',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            SizedBox(width: 10),
+            Icon(
+              Icons.healing_rounded,  // Ícone que deseja usar
+              color: Colors.white,     // Cor do ícone
+            ),
+          ],
+        ),
+        backgroundColor: const Color.fromARGB(255, 23, 151, 173),
+      ),
+
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            Container(
+              height: 80,
+              child: DrawerHeader(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'OpenSans',
+                      fontSize: 20,
+                      ),
+                    ),
+                ),
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(214, 23, 150, 173),
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Simulador'),
+              onTap: () {
+                Navigator.pushNamed(context, '/');
+              },
+            ),
+            ListTile(
+              title: Text('Lista Médica'),
+              onTap: () {
+                Navigator.pushNamed(context, '/lista');
+              },
+            )
+          ],
+        ),
+      ),
+
+      body: Container(
+        margin: const EdgeInsets.all(10.0),
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('Especialidade')),
+              DataColumn(label: Text('Valor da Consulta')),
+              DataColumn(label: Text('Plano de Saúde')),
+            ],
+            rows: especialidades.map((especialidade) {
+              return DataRow(
+                cells: [
+                  DataCell(Center(child: Text(especialidade['nm_especialidade']))),
+                  DataCell(Center(child: Text(especialidade['vl_consulta']))),
+                  DataCell(Center(child: Text(planoSaudeMap[especialidade['fk_plano_saude']]!))),
+                ]
+              );
+            }).toList(),
+            )
+          ),
+        ),
+      );
+  }
+}
