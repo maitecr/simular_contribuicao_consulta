@@ -4,6 +4,14 @@ require_once __DIR__ . '\..\model\Especialidade.php';
 require_once __DIR__ . '\..\model\PlanoCategoria.php';
 require_once __DIR__ . '\..\model\PlanoSaude.php';
 
+//Para linux:
+/*
+require_once(realpath(dirname(__FILE__) . '/..') .'/model/Especialidade.php');
+require_once(realpath(dirname(__FILE__) . '/..') .'/model/PlanoCategoria.php');
+require_once(realpath(dirname(__FILE__) . '/..') .'/model/PlanoSaude.php');
+*/ 
+
+
 class ApiController {
     private $especialidadeModel;
     private $planoSaudeModel;

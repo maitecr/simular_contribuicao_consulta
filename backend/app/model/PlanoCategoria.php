@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '\..\config\Database.php';
 
+//Para linux:
+//require_once(realpath(dirname(__FILE__) . '/..') .'/config/Database.php');
+
+
 class PlanoCategoria extends Database {
     private $id_categoria; //chave composta
     private $pc_participacao; //chave composta

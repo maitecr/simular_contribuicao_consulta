@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+
 void main() async {
   runApp(const MyApp());
 }
@@ -38,7 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _valorConsulta;
                             
   Future<void> fetchDados() async {
-    final response = await http.get(Uri.parse('http://192.168.0.10:8080/public'));
+    final response = await http.get(Uri.parse('http://200.19.1.19/20212GR.ADS0004/TrabalhoFinalPDM/public/main.php'));
+    //final response = await http.get(Uri.parse('http://192.168.0.10:8080/public'));
 
     if (response.statusCode == 200) {
       print('Conexão bem-sucedida');
@@ -52,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> getValorConsulta() async {
     final response = await http.post(
-      Uri.parse('http://192.168.0.10:8080/public'),  
+      Uri.parse('http://200.19.1.19/20212GR.ADS0004/TrabalhoFinalPDM/public/main.php'),  
       body: {
         'nm_especialidade': _especialidadeSelecionada,
         'id_categoria': _categoriaSelecionada,
@@ -80,12 +82,29 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text('Simular Valor da Consulta'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Verificar Valor da Consulta',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+            SizedBox(width: 10),
+            Icon(
+              Icons.healing_rounded,  // Ícone que deseja usar
+              color: Colors.white,     // Cor do ícone
+            ),
+          ],
+        ),
+        backgroundColor: const Color.fromARGB(255, 23, 151, 173),
       ),
       
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(10.0),
+          padding: EdgeInsets.all(30.0),
           alignment: Alignment.center,
           child: Form(
             child: dados.isEmpty 
@@ -152,25 +171,44 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      TextButton(
-                        child: Text('Consultar'),
-                        onPressed: () {
-                          getValorConsulta();
-                          setState(() {   
-                            _planoSelecionado = null;
-                            _especialidadeSelecionada = null;
-                            especialidadesFiltradas = [];
-                          });
-                        } 
+                      Container(
+                        margin: EdgeInsets.all(15),
+                        child: TextButton(
+                          child: Text(
+                            'Consultar',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'OpenSans',
+                              fontSize: 18,
+                          ),),
+                          style: TextButton.styleFrom(
+                            fixedSize: Size(150, 50),
+                            padding: EdgeInsets.all(16),
+                            backgroundColor: const Color.fromARGB(255, 23, 151, 173),
+                          ),
+                          onPressed: () {
+                            getValorConsulta();
+                            setState(() {   
+                              _planoSelecionado = null;
+                              _especialidadeSelecionada = null;
+                              especialidadesFiltradas = [];
+                            });
+                          } 
+                        ),
                       )
                     ]
                   ),
+
                 if (_valorConsulta != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Valor da Contribuição: $_valorConsulta', 
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    'Valor de contribuição: R\$ $_valorConsulta', 
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 37, 135, 159),
+                      fontSize: 20, 
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
 

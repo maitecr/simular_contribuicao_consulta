@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '\..\config\Database.php';
 
+//Para linux:
+//require_once(realpath(dirname(__FILE__) . '/..') .'/config/Database.php');
+
+
 class PlanoSaude extends Database {
     private $id_plano_saude;
     private $nm_plano;
